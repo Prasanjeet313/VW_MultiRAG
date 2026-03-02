@@ -311,7 +311,7 @@ def answer_generator(state: GraphState) -> GraphState:
 
     try:
         response = ollama.chat(
-            model=CAPTION_MODEL,   # llava:7b — multimodal
+            model=CAPTION_MODEL,   # llama3.2-vision — multimodal
             messages=messages,
             options={"temperature": 0.4, "num_ctx": 4096},
         )
@@ -384,7 +384,7 @@ NODE_LABELS = {
     "hybrid_retriever"  : ("📦", "Hybrid Retriever",    "Searching ChromaDB + Knowledge Graph …"),
     "context_summarizer": ("📝", "Context Summariser",  "Compressing retrieved context via Mistral …"),
     "context_validator" : ("✅", "Context Validator",   "Validating context quality via Mistral …"),
-    "answer_generator"  : ("💬", "Answer Generator",    "Generating multi-modal answer via LLaVA …"),
+    "answer_generator"  : ("💬", "Answer Generator",    "Generating multi-modal answer via llama3.2-vision …"),
 }
 
 
