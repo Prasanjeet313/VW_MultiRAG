@@ -1,9 +1,9 @@
 """
-image_captioner.py — Caption every extracted image using LLaVA (via Ollama).
+image_captioner.py — Caption every extracted image using llama3.2-vision (via Ollama).
 
 Flow:
   1.  Load the image file as base64.
-  2.  Send to llava:7b with an audit-context system prompt.
+  2.  Send to llama3.2-vision with an audit-context system prompt.
   3.  Persist result in SQLite image_registry.db
       (image_id TEXT PK, file_path TEXT, caption TEXT,
        page_num INTEGER, source_doc TEXT)
