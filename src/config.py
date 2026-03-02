@@ -23,8 +23,8 @@ for _d in [IMAGES_DIR, CHROMA_DIR, KG_DIR]:
 
 # ── Ollama Model Names ─────────────────────────────────────
 # Pull with:  ollama pull <model>
-EMBEDDING_MODEL  = "nomic-embed-text"   # text embeddings
-CAPTION_MODEL    = "llava:13b"          # multimodal – captions & final answer
+EMBEDDING_MODEL  = "mxbai-embed-large"  # text embeddings (higher MTEB accuracy)
+CAPTION_MODEL    = "llama3.2-vision"    # multimodal – captions & final answer
 REASONING_MODEL  = "gemma3"             # query rewriting, validation, KG triples
 VALIDATOR_MODEL  = "gemma3"             # answer-grading judge (same model, different prompt)
 

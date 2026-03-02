@@ -44,9 +44,9 @@ PDF Processor (PyMuPDF)
 
 | Role | Model |
 |------|-------|
-| Text Embeddings | `nomic-embed-text` |
-| Vision / Caption / Answer | `llava:13b` |
-| Query Rewriting / KG / Validation | `gemma3` |
+| Text Embeddings | `mxbai-embed-large` |
+| Vision / Caption / Answer | `llama3.2-vision` |
+| Query Rewriting / KG / Validation | `mistral` |
 
 ---
 
@@ -128,9 +128,9 @@ pip install -r requirements.txt
 ### 2. Pull Ollama models
 
 ```bash
-ollama pull nomic-embed-text
-ollama pull llava:13b
-ollama pull gemma3
+ollama pull mxbai-embed-large
+ollama pull llama3.2-vision
+ollama pull mistral
 ```
 
 ### 3. Ingest documents
@@ -190,9 +190,9 @@ All model names, paths, and hyper-parameters are in [src/config.py](src/config.p
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `EMBEDDING_MODEL` | `nomic-embed-text` | Ollama embedding model |
-| `CAPTION_MODEL` | `llava:13b` | Multimodal model for captions & answers |
-| `REASONING_MODEL` | `gemma3` | Query rewriting, KG extraction, validation |
+| `EMBEDDING_MODEL` | `mxbai-embed-large` | Ollama embedding model |
+| `CAPTION_MODEL` | `llama3.2-vision` | Multimodal model for captions & answers |
+| `REASONING_MODEL` | `mistral` | Query rewriting, KG extraction, validation |
 | `CHUNK_SIZE` | `800` | Characters per text chunk |
 | `CHUNK_OVERLAP` | `100` | Chunk overlap in characters |
 | `RETRIEVAL_K` | `6` | Top-K chunks retrieved per sub-query |
