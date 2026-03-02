@@ -58,4 +58,4 @@ logs/
 htmlcov/
 
 # ── Docker ────────────────────────────────────────────────
-.dockerignore
+# .dockerignore is intentionally committed

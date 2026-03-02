@@ -1,0 +1,37 @@
+# Exclude generated runtime outputs — mounted as volumes at runtime
+outputs/chroma_db/
+outputs/images/
+outputs/kg/
+image_registry.db
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+.eggs/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Tests
+.pytest_cache/
+.coverage
+htmlcov/

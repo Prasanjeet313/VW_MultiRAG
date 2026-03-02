@@ -22,6 +22,7 @@ from src.config import (
     CHROMA_DIR,
     COLLECTION_NAME,
     EMBEDDING_MODEL,
+    OLLAMA_BASE_URL,
     RETRIEVAL_K,
 )
 
@@ -35,7 +36,7 @@ _embedder: Optional[OllamaEmbeddings]               = None
 def _get_embedder() -> OllamaEmbeddings:
     global _embedder
     if _embedder is None:
-        _embedder = OllamaEmbeddings(model=EMBEDDING_MODEL)
+        _embedder = OllamaEmbeddings(model=EMBEDDING_MODEL, base_url=OLLAMA_BASE_URL)
     return _embedder
 
 

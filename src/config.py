@@ -4,6 +4,7 @@ All paths, model names, and hyper-parameters live here.
 """
 
 from pathlib import Path
+import os
 
 # ── Directory Layout ──────────────────────────────────────
 ROOT_DIR        = Path(__file__).resolve().parent.parent
@@ -27,6 +28,11 @@ EMBEDDING_MODEL  = "mxbai-embed-large"  # text embeddings (higher MTEB accuracy)
 CAPTION_MODEL    = "llama3.2-vision"    # multimodal – captions & final answer
 REASONING_MODEL  = "mistral"            # query rewriting, validation, KG triples
 VALIDATOR_MODEL  = "mistral"            # answer-grading judge (same model, different prompt)
+
+# ── Ollama Server URL ─────────────────────────────────────
+# In Docker: set OLLAMA_HOST=http://ollama:11434 via docker-compose env.
+# The ollama SDK reads this automatically; we also expose it for langchain-ollama.
+OLLAMA_BASE_URL  = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 
 # ── Chunking ─────────────────────────────────────────────
 CHUNK_SIZE       = 800     # characters
