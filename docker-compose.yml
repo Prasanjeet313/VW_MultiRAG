@@ -1,0 +1,92 @@
+version: "3.9"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# VW Audit Multi-Modal Agentic RAG — Full Stack
+#
+#   Services
+#   ────────
+#   ollama   : Ollama LLM server (pulls models on first run)
+#   ingest   : One-shot ingestion job (runs then exits)
+#   app      : Streamlit dashboard (waits for ingest to finish)
+#
+# Usage
+# ─────
+#   # First run (pulls models + ingests documents — takes several minutes):
+#   docker compose up
+#
+#   # Subsequent runs (models & data already present in volumes):
+#   docker compose up app
+#
+#   # View app:
+#   http://localhost:8501
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── Ollama LLM server ────────────────────────────────────
+  ollama:
+    image: ollama/ollama:latest
+    container_name: vw_ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+    # Pull all required models on startup
+    entrypoint: >
+      sh -c "ollama serve &
+             sleep 5 &&
+             ollama pull nomic-embed-text &&
+             ollama pull llava:13b &&
+             ollama pull gemma3 &&
+             wait"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+
+  # ── One-shot document ingestion ──────────────────────────
+  ingest:
+    build: .
+    container_name: vw_ingest
+    depends_on:
+      ollama:
+        condition: service_healthy
+    command: ["python", "ingest.py"]
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    volumes:
+      - vw_outputs:/app/outputs
+      - vw_db:/app/image_registry.db
+      # Mount your PDF folder here (read-only)
+      - ./Volkswagon_Audit_Report_Doc:/app/Volkswagon_Audit_Report_Doc:ro
+    restart: "no"
+
+  # ── Streamlit app ─────────────────────────────────────────
+  app:
+    build: .
+    container_name: vw_app
+    depends_on:
+      ingest:
+        condition: service_completed_successfully
+    ports:
+      - "8501:8501"
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    volumes:
+      - vw_outputs:/app/outputs
+      - vw_db:/app/image_registry.db
+      - ./Volkswagon_Audit_Report_Doc:/app/Volkswagon_Audit_Report_Doc:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  ollama_models:   # persists downloaded Ollama models across restarts
+  vw_outputs:      # persists ChromaDB, KG, extracted images
+  vw_db:           # persists image_registry.db

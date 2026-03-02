@@ -1,0 +1,61 @@
+# ── Python ────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+.eggs/
+
+# ── Virtual Environments ──────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+.env
+
+# ── Jupyter ───────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ── OS ────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDE ───────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Project outputs (generated at runtime) ────────────────
+outputs/chroma_db/
+outputs/images/
+outputs/kg/
+image_registry.db
+
+# ── Keep outputs folder structure ─────────────────────────
+!outputs/.gitkeep
+!outputs/chroma_db/.gitkeep
+!outputs/images/.gitkeep
+!outputs/kg/.gitkeep
+
+# ── Large / sensitive data files ──────────────────────────
+DATA_Inputs_Files/
+# NOTE: Volkswagon_Audit_Report_Doc/ PDFs ARE committed (source docs)
+
+# ── Logs ──────────────────────────────────────────────────
+*.log
+logs/
+
+# ── Pytest / coverage ────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ── Docker ────────────────────────────────────────────────
+.dockerignore
