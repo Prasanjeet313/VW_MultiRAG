@@ -25,8 +25,8 @@ for _d in [IMAGES_DIR, CHROMA_DIR, KG_DIR]:
 # Pull with:  ollama pull <model>
 EMBEDDING_MODEL  = "mxbai-embed-large"  # text embeddings (higher MTEB accuracy)
 CAPTION_MODEL    = "llama3.2-vision"    # multimodal – captions & final answer
-REASONING_MODEL  = "gemma3"             # query rewriting, validation, KG triples
-VALIDATOR_MODEL  = "gemma3"             # answer-grading judge (same model, different prompt)
+REASONING_MODEL  = "mistral"            # query rewriting, validation, KG triples
+VALIDATOR_MODEL  = "mistral"            # answer-grading judge (same model, different prompt)
 
 # ── Chunking ─────────────────────────────────────────────
 CHUNK_SIZE       = 800     # characters

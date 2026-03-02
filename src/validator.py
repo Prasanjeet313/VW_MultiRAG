@@ -1,7 +1,7 @@
 """
 validator.py — Independent answer-grading layer.
 
-Uses llama3.2:3b as a lightweight judge to evaluate the pipeline's answer
+Uses mistral as a lightweight judge to evaluate the pipeline's answer
 on four auditing-relevant dimensions.  Invoked only on user request from
 the Streamlit dashboard ("Validate This Answer" button).
 

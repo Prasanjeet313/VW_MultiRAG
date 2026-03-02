@@ -78,7 +78,7 @@ _SYSTEM_PROMPT = (
 
 
 def _caption_one(image_path: str) -> str:
-    """Call llava:7b via the Ollama SDK and return the caption string."""
+    """Call llama3.2-vision via the Ollama SDK and return the caption string."""
     img_bytes = Path(image_path).read_bytes()
     b64       = base64.b64encode(img_bytes).decode("utf-8")
 

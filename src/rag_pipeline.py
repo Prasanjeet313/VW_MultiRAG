@@ -13,8 +13,8 @@ START
 
 LLMs used
 ─────────
-  • Mistral  — query rewriting, context summarisation, context validation
-  • LLaVA    — final multi-modal answer (text context + actual image bytes)
+  • Mistral        — query rewriting, context summarisation, context validation
+  • llama3.2-vision — final multi-modal answer (text context + actual image bytes)
 """
 
 import base64
