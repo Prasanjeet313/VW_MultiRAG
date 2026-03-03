@@ -59,7 +59,7 @@ services:
       - OLLAMA_HOST=http://ollama:11434
     volumes:
       - vw_outputs:/app/outputs
-      - vw_db:/app/image_registry.db
+      - vw_db:/app/db
       # Mount your PDF folder here (read-only)
       - ./Volkswagon_Audit_Report_Doc:/app/Volkswagon_Audit_Report_Doc:ro
     restart: "no"
@@ -77,7 +77,7 @@ services:
       - OLLAMA_HOST=http://ollama:11434
     volumes:
       - vw_outputs:/app/outputs
-      - vw_db:/app/image_registry.db
+      - vw_db:/app/db
       - ./Volkswagon_Audit_Report_Doc:/app/Volkswagon_Audit_Report_Doc:ro
     restart: unless-stopped
     healthcheck:

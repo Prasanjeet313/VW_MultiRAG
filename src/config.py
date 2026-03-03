@@ -15,11 +15,12 @@ IMAGES_DIR      = OUTPUTS_DIR / "images"
 CHROMA_DIR      = OUTPUTS_DIR / "chroma_db"
 KG_DIR          = OUTPUTS_DIR / "kg"
 
-DB_PATH         = str(ROOT_DIR / "image_registry.db")
+DB_DIR          = ROOT_DIR / "db"
+DB_PATH         = str(DB_DIR  / "image_registry.db")
 KG_PATH         = str(KG_DIR  / "graph.pkl")
 
 # Create output directories on import
-for _d in [IMAGES_DIR, CHROMA_DIR, KG_DIR]:
+for _d in [IMAGES_DIR, CHROMA_DIR, KG_DIR, DB_DIR]:
     _d.mkdir(parents=True, exist_ok=True)
 
 # ── Ollama Model Names ─────────────────────────────────────
