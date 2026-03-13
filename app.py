@@ -141,11 +141,12 @@ with st.sidebar:
     # ── Model Info ────────────────────────────────────────
     st.subheader("🤖 Models (Ollama)")
     from src.config import (
-        EMBEDDING_MODEL, CAPTION_MODEL,
+        EMBEDDING_MODEL, CAPTION_MODEL, ANSWER_MODEL,
         REASONING_MODEL,
     )
     st.caption(f"**Embeddings:** `{EMBEDDING_MODEL}`")
-    st.caption(f"**Multimodal:**  `{CAPTION_MODEL}`")
+    st.caption(f"**Image Captioner:** `{CAPTION_MODEL}`")
+    st.caption(f"**Answer Generation:** `{ANSWER_MODEL}`")
     st.caption(f"**Reasoning + Validator:** `{REASONING_MODEL}` (shared)")
 
     st.divider()
@@ -322,32 +323,20 @@ if user_query:
         context   = merged_state.get("summarized_context", "")
         image_ids = merged_state.get("retrieved_image_ids", [])
 
-        # If the pipeline already produced a non-streamed answer use that,
-        # otherwise stream fresh tokens from Ollama.
-        pipeline_answer = merged_state.get("final_answer", "")
+        # Always stream tokens live from Ollama for real-time output
+        try:
+            for token in stream_answer_tokens(
+                user_query, context, image_ids
+            ):
+                full_answer += token
+                answer_placeholder.markdown(full_answer + "▌")
+            answer_placeholder.markdown(full_answer)
+        except Exception as exc:
+            full_answer = f"[Answer generation failed: {exc}]\n\n{context}"
+            answer_placeholder.markdown(full_answer)
 
-        if pipeline_answer:
-            # Simulate token streaming for already-generated answer
-            chunk_size = 6
-            displayed  = ""
-            for ci in range(0, len(pipeline_answer), chunk_size):
-                displayed += pipeline_answer[ci : ci + chunk_size]
-                answer_placeholder.markdown(displayed + "▌")
-                time.sleep(0.01)
-            answer_placeholder.markdown(pipeline_answer)
-            full_answer = pipeline_answer
-        else:
-            # True streaming from Ollama
-            try:
-                for token in stream_answer_tokens(
-                    user_query, context, image_ids
-                ):
-                    full_answer += token
-                    answer_placeholder.markdown(full_answer + "▌")
-                answer_placeholder.markdown(full_answer)
-            except Exception as exc:
-                full_answer = f"[Answer generation failed: {exc}]\n\n{context}"
-                answer_placeholder.markdown(full_answer)
+        # Store streamed answer back into state so validation can use it
+        merged_state["final_answer"] = full_answer
 
         retry_count = merged_state.get("retry_count", 0)
         status_bar.success(
@@ -386,34 +375,30 @@ if user_query:
         # ── Retrieved Images ──────────────────────────────
         image_ids = merged_state.get("retrieved_image_ids", [])
         if image_ids:
-            with st.expander(f"🖼️ Retrieved Visuals ({len(image_ids)} images)", expanded=True):
-                from src.image_captioner import get_image_record
-                from PIL import Image as PILImage
+            from src.image_captioner import get_image_record
+            from PIL import Image as PILImage
 
-                cols_per_row = 2
-                img_records  = [
-                    r for img_id in image_ids
-                    if (r := get_image_record(img_id)) is not None
-                    and Path(r["file_path"]).exists()
-                ]
+            img_records = [
+                r for img_id in image_ids
+                if (r := get_image_record(img_id)) is not None
+                and Path(r["file_path"]).exists()
+            ]
 
-                for row_start in range(0, len(img_records), cols_per_row):
-                    cols = st.columns(cols_per_row)
-                    for col_idx, record in enumerate(
-                        img_records[row_start : row_start + cols_per_row]
-                    ):
-                        with cols[col_idx]:
-                            try:
-                                img = PILImage.open(record["file_path"])
-                                st.image(img, use_container_width=True)
-                            except Exception:
-                                st.warning("Could not load image")
-                            st.caption(
-                                f"**Page {record['page_num']}** · "
-                                f"{record['caption'][:200]}…"
-                                if len(record.get("caption", "")) > 200
-                                else f"**Page {record['page_num']}** · {record.get('caption', '')}"
-                            )
+            if img_records:
+                st.markdown(f"**🖼️ Retrieved Visuals ({len(img_records)} images)**")
+                for record in img_records:
+                    try:
+                        img = PILImage.open(record["file_path"])
+                        st.image(img, use_container_width=True)
+                    except Exception:
+                        st.warning("Could not load image")
+                    caption_text = record.get("caption", "")
+                    display_caption = (
+                        f"**Page {record['page_num']}** · {caption_text[:200]}…"
+                        if len(caption_text) > 200
+                        else f"**Page {record['page_num']}** · {caption_text}"
+                    )
+                    st.markdown(display_caption)
 
 
 # ════════════════════════════════════════════════════════════
@@ -427,7 +412,8 @@ if st.session_state.get("last_state") is not None:
     with col_v1:
         if st.button("🧪 Validate This Answer", type="secondary", use_container_width=True):
             last_state = st.session_state["last_state"]
-            with st.spinner(f"Grading answer with `mistral` (strict judge prompt) …"):
+            from src.config import REASONING_MODEL as _reasoning_model
+            with st.spinner(f"Grading answer with `{_reasoning_model}` (strict judge prompt) …"):
                 from src.validator import validate_answer
                 result = validate_answer(
                     question = st.session_state["last_query"],

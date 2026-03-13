@@ -29,6 +29,7 @@ from langgraph.graph import StateGraph, START, END
 from src.config import (
     REASONING_MODEL,
     CAPTION_MODEL,
+    ANSWER_MODEL,
     MAX_RETRIES,
     RETRIEVAL_K,
 )
@@ -309,21 +310,14 @@ def answer_generator(state: GraphState) -> GraphState:
         },
     ]
 
-    try:
-        response = ollama.chat(
-            model=CAPTION_MODEL,   # llama3.2-vision — multimodal
-            messages=messages,
-            options={"temperature": 0.4, "num_ctx": 4096},
-        )
-        answer = response["message"]["content"].strip()
-    except Exception as e:
-        answer = f"[Answer generation failed: {e}]\n\nBest available context:\n{context}"
-
+    # Answer generation is handled via streaming in the UI (stream_answer_tokens).
+    # We store the prepared messages context here so the streaming call
+    # can pick up image_ids and summarized_context from state.
     img_note = f" (with {len(b64_images)} visuals)" if b64_images else ""
-    trace_entry = f"💬 Answer generated{img_note}"
+    trace_entry = f"💬 Ready to stream answer{img_note}"
     return {
         **state,
-        "final_answer": answer,
+        "final_answer": "",   # will be filled by streaming in app.py
         "trace"       : state.get("trace", []) + [trace_entry],
     }
 
@@ -380,11 +374,11 @@ def get_pipeline():
 
 # Human-readable labels for each graph node
 NODE_LABELS = {
-    "query_rewriter"    : ("🔎", "Query Rewriter",     "Generating semantic sub-queries via Mistral …"),
+    "query_rewriter"    : ("🔎", "Query Rewriter",     f"Generating semantic sub-queries via {REASONING_MODEL} …"),
     "hybrid_retriever"  : ("📦", "Hybrid Retriever",    "Searching ChromaDB + Knowledge Graph …"),
-    "context_summarizer": ("📝", "Context Summariser",  "Compressing retrieved context via Mistral …"),
-    "context_validator" : ("✅", "Context Validator",   "Validating context quality via Mistral …"),
-    "answer_generator"  : ("💬", "Answer Generator",    "Generating multi-modal answer via llama3.2-vision …"),
+    "context_summarizer": ("📝", "Context Summariser",  f"Compressing retrieved context via {REASONING_MODEL} …"),
+    "context_validator" : ("✅", "Context Validator",   f"Validating context quality via {REASONING_MODEL} …"),
+    "answer_generator"  : ("💬", "Answer Generator",    f"Generating multi-modal answer via {ANSWER_MODEL} …"),
 }
 
 
@@ -483,7 +477,7 @@ def stream_answer_tokens(query: str, context: str, image_ids: list):
     ]
 
     response = ollama.chat(
-        model   = CAPTION_MODEL,
+        model   = ANSWER_MODEL,
         messages= messages,
         stream  = True,
         options = {"temperature": 0.4, "num_ctx": 4096},

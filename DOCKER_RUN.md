@@ -56,7 +56,7 @@ http://localhost:8501
 ```bash
 docker run -d \
   --name ollama \
-  -p 11434:11434 \
+  -p 11435:11434 \
   -v ollama_models:/root/.ollama \
   ollama/ollama
 ```
@@ -81,7 +81,7 @@ docker build -t vw-rag .
 docker run --rm \
   --name vw_ingest \
   --network host \
-  -e OLLAMA_HOST=http://localhost:11434 \
+  -e OLLAMA_HOST=http://localhost:11435 \
   -v $(pwd)/outputs:/app/outputs \
   -v $(pwd)/Volkswagon_Audit_Report_Doc:/app/Volkswagon_Audit_Report_Doc:ro \
   vw-rag python ingest.py
@@ -93,7 +93,7 @@ docker run --rm \
 docker run -d \
   --name vw_app \
   --network host \
-  -e OLLAMA_HOST=http://localhost:11434 \
+  -e OLLAMA_HOST=http://localhost:11435 \
   -p 8501:8501 \
   -v $(pwd)/outputs:/app/outputs \
   -v $(pwd)/Volkswagon_Audit_Report_Doc:/app/Volkswagon_Audit_Report_Doc:ro \
@@ -155,7 +155,7 @@ http://<your-server-ip>:8501
 | Problem | Fix |
 |---------|-----|
 | Port 8501 not accessible | Open port in firewall / security group |
-| Ollama not reachable | Ensure `OLLAMA_HOST=http://ollama:11434` is set |
+| Ollama not reachable | Ensure `OLLAMA_HOST=http://ollama:11435` is set |
 | Out of memory | Increase server RAM or use a smaller model in `src/config.py` |
 | Ingestion takes too long | Wait — first run is slow due to model loading |
 | Docker permission denied | Run `sudo usermod -aG docker $USER` then log out and back in |

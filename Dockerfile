@@ -10,7 +10,7 @@
 #
 # Run (standalone, Ollama on host):
 #   docker run -p 8501:8501 \
-#     -e OLLAMA_HOST=http://host.docker.internal:11434 \
+#     -e OLLAMA_HOST=http://host.docker.internal:11435 \
 #     -v $(pwd)/Volkswagon_Audit_Report_Doc:/app/Volkswagon_Audit_Report_Doc:ro \
 #     -v vw_outputs:/app/outputs \
 #     vw-rag

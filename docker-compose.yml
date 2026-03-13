@@ -29,15 +29,15 @@ services:
     container_name: vw_ollama
     restart: unless-stopped
     ports:
-      - "11434:11434"
+      - "11435:11434"
     volumes:
       - ollama_models:/root/.ollama
     # Pull all required models on startup
     entrypoint: >
       sh -c "ollama serve &
              sleep 5 &&
-             ollama pull mxbai-embed-large &&
-             ollama pull llama3.2-vision &&
+             ollama pull nomic-embed-text &&
+             ollama pull llava &&
              ollama pull mistral &&
              wait"
     healthcheck:

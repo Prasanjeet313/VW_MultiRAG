@@ -13,15 +13,15 @@ get_chunk_by_id(chunk_id)   — fetch a single chunk by its deterministic id
 collection_size()           — number of documents currently stored
 """
 
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Tuple, Optional, Any
 
 import chromadb
-from langchain_ollama import OllamaEmbeddings
 
 from src.config import (
     CHROMA_DIR,
     COLLECTION_NAME,
     EMBEDDING_MODEL,
+    EMBEDDING_PROVIDER,
     OLLAMA_BASE_URL,
     RETRIEVAL_K,
 )
@@ -30,13 +30,19 @@ from src.config import (
 # ── Singleton handles ─────────────────────────────────────
 _chroma_client: Optional[chromadb.PersistentClient] = None
 _collection: Optional[chromadb.Collection]          = None
-_embedder: Optional[OllamaEmbeddings]               = None
+_embedder: Optional[Any]                            = None
 
 
-def _get_embedder() -> OllamaEmbeddings:
+def _get_embedder():
+    """Return the appropriate embedder based on EMBEDDING_PROVIDER in config."""
     global _embedder
     if _embedder is None:
-        _embedder = OllamaEmbeddings(model=EMBEDDING_MODEL, base_url=OLLAMA_BASE_URL)
+        if EMBEDDING_PROVIDER == "huggingface":
+            from langchain_huggingface import HuggingFaceEmbeddings
+            _embedder = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
+        else:
+            from langchain_ollama import OllamaEmbeddings
+            _embedder = OllamaEmbeddings(model=EMBEDDING_MODEL, base_url=OLLAMA_BASE_URL)
     return _embedder
 
 
